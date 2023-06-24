@@ -1,0 +1,22 @@
+{
+    "manifest_version": 2,
+    "name": "Filmweb notes",
+    "version": "1.0",
+    "description": "Filmweb notes",
+    "permissions": [
+      "storage",
+      "activeTab",
+      "<all_urls>"
+    ],
+    "content_scripts": [
+      {
+        "matches": [
+          "*://*.filmweb.pl/*"
+        ],
+        "js": [
+          "content.js"
+        ],
+        "run_at": "document_end"
+      }
+    ]
+}
