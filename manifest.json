@@ -8,12 +8,17 @@
       "activeTab",
       "<all_urls>"
     ],
+    // "background": {
+    //   "scripts": ["background.js"],
+    //   "persistent": false
+    // },
     "content_scripts": [
       {
         "matches": [
           "*://*.filmweb.pl/film/*"
         ],
         "js": [
+          "common.js",
           "film.js"
         ],
         "run_at": "document_end"
@@ -23,6 +28,7 @@
           "*://*.filmweb.pl/user/*/wantToSee"
         ],
         "js": [
+          "common.js",
           "want-to-see.js"
         ],
         "run_at": "document_end"
