@@ -1,7 +1,11 @@
 // Create a text box element
 var textBox = document.createElement('textarea');
-textBox.style.width = '300px';
-textBox.style.height = '150px';
+textBox.style.width = '100%';
+textBox.style.height = '200px';
+textBox.style.border = '1px solid #ccc';
+textBox.style.borderRadius = '5px';
+textBox.style.padding = '8px';
+textBox.setAttribute('spellcheck', 'false');
 
 // Retrieve the note from sync storage and display it in the text box
 // chrome.storage.sync.get('note', function(result) {
