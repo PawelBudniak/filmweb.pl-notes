@@ -87,6 +87,7 @@ var observer = new MutationObserver(function(mutations) {
 
 // Start observing changes in the DOM
 observer.observe(document.body, { childList: true, subtree: true });
+console.log("Notatka film script")
 
 
 

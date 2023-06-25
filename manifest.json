@@ -11,10 +11,19 @@
     "content_scripts": [
       {
         "matches": [
-          "*://*.filmweb.pl/*"
+          "*://*.filmweb.pl/film/*"
         ],
         "js": [
           "content.js"
+        ],
+        "run_at": "document_end"
+      },
+      {
+        "matches": [
+          "*://*.filmweb.pl/user/*/wantToSee"
+        ],
+        "js": [
+          "want-to-see.js"
         ],
         "run_at": "document_end"
       }
