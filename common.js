@@ -6,6 +6,32 @@ function defaultNoteTextbox(){
     textBox.style.borderRadius = '5px';
     textBox.style.padding = '8px';
     textBox.setAttribute('spellcheck', 'false');
+    textBox.style.backgroundColor = '#f8f8f8';
+    textBox.style.fontFamily = 'Arial, sans-serif';
+    textBox.style.fontSize = '14px';
+    textBox.style.textAlign = 'left';
+
+    textBox.addEventListener('focus', function() {
+        textBox.style.border = '1px solid green';
+        // textBox.style.backgroundColor = '#fff';
+      });
+      
+    textBox.addEventListener('blur', function() {
+        textBox.style.border = '1px solid #ccc';
+        // textBox.style.backgroundColor = '#f8f8f8';
+    });
+
+    // textBox.style.background = 'linear-gradient(to bottom, #ffffff, #f2f2f2)';
+    // textBox.style.borderRadius = '10px';
+    //textBox.style.transition = 'box-shadow 0.3s ease-in-out';
+    textBox.placeholder = 'Add your notes here...';
+
+
+
+
+
+
+
 
     return textBox
 }

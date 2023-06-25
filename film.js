@@ -3,7 +3,7 @@ console.log("Notatka film script")
 filmId = getFilmIdFromPath(window.location.href)
 
 var textBox = defaultNoteTextbox()
-textBox.height = '200px'
+textBox.style.height = '150px'
 textBox.addEventListener('input', createSaveNoteCallback(filmId))
 
 chrome.storage.sync.get('notes', function(result) {
