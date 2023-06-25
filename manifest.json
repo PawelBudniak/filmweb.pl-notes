@@ -14,7 +14,7 @@
           "*://*.filmweb.pl/film/*"
         ],
         "js": [
-          "content.js"
+          "film.js"
         ],
         "run_at": "document_end"
       },
