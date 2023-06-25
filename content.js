@@ -4,19 +4,57 @@ textBox.style.width = '300px';
 textBox.style.height = '150px';
 
 // Retrieve the note from sync storage and display it in the text box
-chrome.storage.sync.get('note', function(result) {
-  var noteText = result.note || '';
+// chrome.storage.sync.get('note', function(result) {
+//   var noteText = result.note || '';
+//   textBox.value = noteText;
+// });
+
+// // Save the note when the text box value changes
+// textBox.addEventListener('input', function() {
+//   var noteText = textBox.value;
+//   chrome.storage.sync.set({ 'note': noteText }, function() {
+//     console.log('Note saved:', noteText);
+//   });
+// });
+
+// Extract the film ID from the URL
+function getFilmId() {
+  var url = window.location.href;
+  var filmId = ''; // Initialize with an empty string
+
+  // Implement the logic to extract the film ID from the URL
+  // Modify the logic based on the URL structure of filmweb.pl
+  // Example: https://www.filmweb.pl/film/{filmId}
+  var regex = /\/film\/([^/]+)/;
+  var match = url.match(regex);
+  if (match && match.length > 1) {
+    filmId = match[1];
+  }
+
+  return filmId;
+}
+
+
+
+chrome.storage.sync.get('notes', function(result) {
+  var notes = result.notes || {};
+  var filmId = getFilmId(); // Implement a function to extract the film ID from the filmweb.pl website
+  var noteText = notes[filmId] || '';
   textBox.value = noteText;
 });
 
 // Save the note when the text box value changes
 textBox.addEventListener('input', function() {
+  var filmId = getFilmId(); // Implement a function to extract the film ID from the filmweb.pl website
   var noteText = textBox.value;
-  chrome.storage.sync.set({ 'note': noteText }, function() {
-    console.log('Note saved:', noteText);
+  chrome.storage.sync.get('notes', function(result) {
+    var notes = result.notes || {};
+    notes[filmId] = noteText;
+    chrome.storage.sync.set({ 'notes': notes }, function() {
+      console.log('Note saved for film ID:', filmId);
+    });
   });
 });
-
 
 
 function myInitCode () {
