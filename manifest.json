@@ -11,7 +11,8 @@
     "content_scripts": [
       {
         "matches": [
-          "*://*.filmweb.pl/film/*"
+          "*://*.filmweb.pl/film/*",
+          "*://*.filmweb.pl/serial/*"
         ],
         "js": [
           "common.js",

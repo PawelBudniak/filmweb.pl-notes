@@ -26,13 +26,6 @@ function defaultNoteTextbox(){
     //textBox.style.transition = 'box-shadow 0.3s ease-in-out';
     textBox.placeholder = 'Add your notes here...';
 
-
-
-
-
-
-
-
     return textBox
 }
 
@@ -54,7 +47,7 @@ function getFilmIdFromPath(path) {
     var filmId = '';
   
     // Example: */film/{filmId}*
-    var regex = /\/film\/([^/]+)/;
+    var regex = /\/(film|serial)\/([^/]+)/;
     var match =path.match(regex);
     if (match && match.length > 1) {
       filmId = match[1];
