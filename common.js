@@ -47,7 +47,7 @@ function getFilmIdFromPath(path) {
     var filmId = '';
   
     // Example: */film/{filmId}*
-    var regex = /\/(film|serial)\/([^/]+)/;
+    var regex = /\/(?:film|serial)\/([^/]+)/;
     var match =path.match(regex);
     if (match && match.length > 1) {
       filmId = match[1];
