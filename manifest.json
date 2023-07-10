@@ -22,7 +22,7 @@
       },
       {
         "matches": [
-          "*://*.filmweb.pl/user/*/wantToSee"
+          "*://*.filmweb.pl/user/*/wantToSee*"
         ],
         "js": [
           "common.js",
