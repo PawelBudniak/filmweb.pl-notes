@@ -116,19 +116,19 @@ function addNoteTextBoxLink(notes, filmPreview, linkElement, durations){
     textBox.addEventListener('input', createSaveNoteCallback(filmId))
 
     // Find the film preview's header element and append the text box
-    var headerElement = filmPreview.querySelector('.sc-fbKhjd.xMhRc');
-    headerElement.appendChild(textBox);
+    //var headerElement = filmPreview.querySelector('.sc-fbKhjd.xMhRc');
+    var parent = filmPreview.querySelector('.sc-fEcDHC.jSUPsO');
+    parent.appendChild(textBox);
 
     // Add duration info
     displayDuration(filmPreview, filmId, durations)
 }
 
-function displayDuration(filmPreview, filmId, durations) {
+function displayDuration(parent, filmId, durations) {
     // Find the film preview's header element and append the duration box
-    var headerElement = filmPreview.querySelector('.sc-fbKhjd.xMhRc');
     duration = durations[filmId]
     el = createDurationElement(duration)
-    headerElement.appendChild(el)
+    parent.appendChild(el)
 }
 
 function createDurationElement(duration) {
