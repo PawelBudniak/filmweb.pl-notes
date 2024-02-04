@@ -76,3 +76,23 @@ function waitForElm(selector) {
         });
     });
 }
+
+function waitForElmParent(parent, selector) {
+    return new Promise(resolve => {
+        if (parent.querySelector(selector)) {
+            return resolve(parent.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (parent.querySelector(selector)) {
+                resolve(parent.querySelector(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
