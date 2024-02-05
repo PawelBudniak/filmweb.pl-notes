@@ -1,3 +1,10 @@
+function notesName() {
+    return 'notes-new'
+}
+function durationsName(){
+    return 'durations-new'
+}
+
 function defaultNoteTextbox(){
     var textBox = document.createElement('textarea');
     textBox.style.width = '100%';
@@ -33,11 +40,14 @@ function createSaveNoteCallback(filmId){
     return function(event){
         var textBox = event.target
         var noteText = textBox.value;
-        chrome.storage.sync.get('notes', function(result) {
-            var notes = result.notes || {};
+        chrome.storage.sync.get(notesName(), function(result) {
+            var notes = result[notesName()] || {};
             notes[filmId] = noteText;
-            chrome.storage.sync.set({ 'notes': notes }, function() {
-                console.log('Note saved for film ID:', filmId);
+            console.log('resulting note: ', notes)
+            n = {}
+            n[notesName()] = notes
+            chrome.storage.sync.set(n, function() {
+                console.log('Note', noteText, 'saved for film ID:', filmId, 'to', n);
             });
         });
     }
@@ -53,9 +63,13 @@ function getFilmIdFromPath(path) {
       filmId = match[1];
     }
   
-    return filmId;
+    return extractFilmID(filmId);
 }
 
+function extractFilmID(id) {
+  const parts = id.split('-');
+  return parts[parts.length - 1];
+}
 
 function waitForElm(selector) {
     return new Promise(resolve => {
