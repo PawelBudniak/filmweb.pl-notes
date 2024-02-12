@@ -8,18 +8,10 @@ setTimeout(function() {
         console.log("WANT TO SEE")
         // Wait until the first preview is available
         waitForElm(RIBBON_ELEMENT).then(async (elm) => {
-            //console.log("first preview found")
 
             let notes = await readSyncStorage(notesName())
             let durations = await readSyncStorage(durationsName())
 
-            // console.log('notes', notes)
-            // return
-                
-            // Find all film preview elements on the "Films I Want to See" page
-            //var filmPreviews = document.querySelectorAll(RIBBON_ELEMENT);
-            //console.log("film previous found: ", filmPreviews)
-        
             setTimeout(function() {
               var filmPreviews = document.querySelectorAll(RIBBON_ELEMENT);
                 filmPreviews.forEach(function(filmPreview) {
