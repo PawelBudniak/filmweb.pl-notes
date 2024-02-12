@@ -1,8 +1,13 @@
+RIBBON_NAME = 'RibbonFilm'
+RIBBON_ELEMENT =  '.' + RIBBON_NAME
+
+
+
 setTimeout(function() {
     if (window.location.hash.includes("/wantToSee/")) {
         console.log("WANT TO SEE")
         // Wait until the first preview is available
-        waitForElm('.sc-jhJOaJ.jfczAc').then(async (elm) => {
+        waitForElm(RIBBON_ELEMENT).then(async (elm) => {
             //console.log("first preview found")
 
             let notes = await readSyncStorage(notesName())
@@ -12,11 +17,13 @@ setTimeout(function() {
             // return
                 
             // Find all film preview elements on the "Films I Want to See" page
-            var filmPreviews = document.querySelectorAll('.sc-jhJOaJ.jfczAc');
+            //var filmPreviews = document.querySelectorAll(RIBBON_ELEMENT);
             //console.log("film previous found: ", filmPreviews)
         
             setTimeout(function() {
+              var filmPreviews = document.querySelectorAll(RIBBON_ELEMENT);
                 filmPreviews.forEach(function(filmPreview) {
+                    filmPreview = filmPreview.parentElement.parentElement
                     addNoteTextBox(notes, filmPreview, durations)
                 });
     
@@ -40,17 +47,19 @@ const readSyncStorage = async (key) => {
     });
   };
 
+const LINK_ELEMENT = 'a[href^="/film/"], a[href^="/serial/"]'
 
 // WITH WAITING
 function addNoteTextBoxWait(notes, filmPreview, durations) {
-    waitForElmParent(filmPreview, '.sc-fbKhjd.xMhRc').then((linkElement) => {
+    waitForElmParent(filmPreview, LINK_ELEMENT).then((linkElement) => {
        addNoteTextBoxLink(notes, filmPreview, linkElement, durations)
     });
   }
 
 // NO WAIT
 function addNoteTextBox(notes, filmPreview, durations) {
-    var linkElement = filmPreview.querySelector('.sc-fbKhjd.xMhRc');
+    // console.log("link element for: ", filmPreview)
+    var linkElement = filmPreview.querySelector(LINK_ELEMENT);
     addNoteTextBoxLink(notes, filmPreview, linkElement, durations)
 }
 
@@ -69,7 +78,8 @@ function addNoteTextBoxLink(notes, filmPreview, linkElement, durations){
 
     // Find the film preview's header element and append the text box
     //var headerElement = filmPreview.querySelector('.sc-fbKhjd.xMhRc');
-    var parent = filmPreview.querySelector('.sc-fEcDHC.jSUPsO');
+    //var parent = filmPreview.querySelector('.sc-jRUPCi.fQoqFm');
+    var parent = linkElement.parentElement
     parent.appendChild(textBox);
 
     // Add duration info
@@ -77,7 +87,6 @@ function addNoteTextBoxLink(notes, filmPreview, linkElement, durations){
 }
 
 function displayDuration(parent, filmId, durations) {
-    // Find the film preview's header element and append the duration box
     duration = durations[filmId]
     el = createDurationElement(duration)
     parent.appendChild(el)
@@ -102,39 +111,33 @@ function createDurationElement(duration) {
 
 // Function to observe mutations in the DOM
 function observeDOM(notes, durations) {
-    // Select the target node to observe (the body in this case)
-    var targetNode = document.body;
-  
-    // Options for the observer (in this case, we want to observe childList mutations)
-    var config = { childList: true, subtree: true };
-  
-    // Callback function to execute when mutations are observed
-    var callback = function (mutationsList, observer) {
-      for (var mutation of mutationsList) {
-        if (mutation.type === "childList") {
-          // Check if the added nodes include elements with the specified class name
-          var addedElements = mutation.addedNodes;
-          for (var i = 0; i < addedElements.length; i++) {
-            var addedElement = addedElements[i];
-            if (
-              addedElement.nodeType === 1 && // Check if it's an element node
-              addedElement.classList.contains("sc-jhJOaJ") &&
-              addedElement.classList.contains("jfczAc")
-            ) {
-              // Annotate the specific element with the desired class name
-              addNoteTextBoxWait(notes, addedElement, durations)
-            }
-          }
+  // Select the target node to observe (the body in this case)
+  var grid = document.querySelector(RIBBON_ELEMENT).parentElement.parentElement.parentElement;
+
+  // Options for the observer (in this case, we want to observe childList mutations)
+  var config = { childList: true};
+
+  // Callback function to execute when mutations are observed
+  var callback = function (mutationsList, observer) {
+    for (var mutation of mutationsList) {
+      var addedElements = mutation.addedNodes;
+      for (var i = 0; i < addedElements.length; i++) {
+        var addedElement = addedElements[i];
+          // Annotate the specific element with the desired class name
+          //filmPreview = addedElement.parentElement.parentElement
+          addNoteTextBoxWait(notes, addedElement, durations)
         }
-      }
-    };
-  
-    // Create an observer instance linked to the callback function
-    var observer = new MutationObserver(callback);
-  
-    // Start observing the target node for configured mutations
-    observer.observe(targetNode, config);
-    return observer
+
+      //}
+    }
+  };
+
+  // Create an observer instance linked to the callback function
+  var observer = new MutationObserver(callback);
+
+  // Start observing the target node for configured mutations
+  observer.observe(grid, config);
+  return observer
 }
 
   // SORT
@@ -156,18 +159,18 @@ function createSortButton(observer) {
 function sortByDuration() {
   observer.disconnect();
     // Get the parent grid element
-  var parentGrid = document.querySelector('.sc-gFVvzn.sc-kqNxZD.epxeWl.cbRtlG');
+  var parentGrid = document.querySelector(RIBBON_ELEMENT).parentElement.parentElement.parentElement;
 
   // Get all the child movie elements
-  var movieElements = Array.from(parentGrid.querySelectorAll('.sc-jhJOaJ.jfczAc'));
+  //var movieElements = Array.from(parentGrid.querySelectorAll('.sc-jhJOaJ.jfczAc'));
+  var movieElements =  Array.from(parentGrid.children).filter(element => element.className !== '')
+
 
   // Extract and store movie data with duration from each child element
-  var moviesData = movieElements.map(function (movieElement) {
-    return {
+  var moviesData = movieElements.map(movieElement => ({
       element: movieElement,
       duration: extractDuration(movieElement) // Replace with your logic to extract duration
-    };
-  });
+  }));
 
   // Sort movies based on duration
   moviesData.sort(function (a, b) {
@@ -185,10 +188,14 @@ function sortByDuration() {
     parentGrid.appendChild(movie.element);
   });
 }
-// Function to extract duration from a movie element (replace with your logic)
+
 function extractDuration(movieElement) {
-  // Replace this logic with your code to extract duration from the movie element
-  return movieElement.querySelector('.my-duration').textContent.trim();
+  try {
+    return movieElement.querySelector('.my-duration').textContent.trim();
+  } catch (error) {
+    console.error('An error occurred while extracting duration for el %s: %s',movieElement, error);
+    return '0 godz.'
+  }
 }
 
 // Function to convert duration text to minutes
@@ -207,51 +214,3 @@ function convertToMinutes(durationText) {
     return null;
   }
 }
-
-// migrateData();
-// function migrateData() {
-//   // Fetch existing data from Chrome Sync Storage
-//   chrome.storage.sync.get(['notes', 'durations'], function (result) {
-//     if (chrome.runtime.lastError) {
-//       console.error('Error fetching data from Chrome Sync Storage:', chrome.runtime.lastError);
-//       return;
-//     }
-
-//     // Process and migrate data
-//     const notesData = migrateMap(result.notes);
-//     const durationsData = migrateMap(result.durations);
-
-//     // Save migrated data to new maps
-//     chrome.storage.sync.set({ 'notes-new': notesData });
-//     chrome.storage.sync.set({ 'durations-new': durationsData });
-
-//     console.log('Migration completed successfully.');
-//   });
-// }
-
-// // Function to migrate map data
-// function migrateMap(originalMap) {
-//   const migratedMap = {};
-
-//   if (originalMap) {
-//     Object.keys(originalMap).forEach(function (key) {
-//       // Extract the last part of the ID
-//       const id = extractFilmID(key);
-      
-//       // Create an entry in the new map
-//       migratedMap[id] = originalMap[key];
-//     });
-//   }
-
-//   console.log(migratedMap);
-//   return migratedMap;
-// }
-
-// // Function to extract the last part of the ID
-// function extractFilmID(id) {
-//   const parts = id.split('-');
-//   return parts[parts.length - 1];
-// }
-
-// // Call the migration function
-// migrateData();
