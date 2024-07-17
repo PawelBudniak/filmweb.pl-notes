@@ -4,7 +4,7 @@ RIBBON_ELEMENT =  '.' + RIBBON_NAME
 
 
 setTimeout(function() {
-    if (window.location.hash.includes("/wantToSee/")) {
+    // if (window.location.hash.includes("/wantToSee/")) {
         console.log("WANT TO SEE")
         // Wait until the first preview is available
         waitForElm(RIBBON_ELEMENT).then(async (elm) => {
@@ -23,7 +23,7 @@ setTimeout(function() {
                 createSortButton(observer);
             }, 1000);
         });
-    }
+   // }
 }, 200);
 
 const readSyncStorage = async (key) => {
