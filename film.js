@@ -16,10 +16,16 @@ chrome.storage.sync.get('notes-new', function(result) {
   console.log('setting', noteText, 'for:', filmId, )
 });
 
-chrome.storage.sync.get('notes-test', function(result) {
-  console.log("saved:")
-  console.log(result)
-})
+function print (name) {
+  chrome.storage.sync.get(name, function(result) {
+    console.log("saved:", name)
+    console.log(result)
+  })
+}
+
+print('notes-testi')
+print('durations-testi')
+
 
 // add text box
 waitForElm('.filmActionBox__card').then((elm) => {
