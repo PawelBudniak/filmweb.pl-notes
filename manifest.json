@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Filmweb notes",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Makes it possible to add a note to each film on filmweb.pl",
     "permissions": [
       "storage"
