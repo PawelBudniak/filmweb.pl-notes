@@ -23,7 +23,7 @@ waitForElm('.filmActionBox__card').then((elm) => {
 });
 
 // save duration in sync storage
-waitForElm('span[data-i18n="film:duration"]').then(elm => {
+waitForElm('.filmCoverSection__duration').then(elm => {
   var durationText = elm.textContent.trim();
   //minutes = convertToMinutes(durationText)
   //console.log("duration", minutes)
