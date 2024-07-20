@@ -23,15 +23,21 @@ function print (name) {
   })
 }
 
-print('notes-testi')
-print('durations-testi')
-
-
 // add text box
 waitForElm('.filmActionBox__card').then((elm) => {
   console.log("namierzony filmActionBox__card")
   elm.appendChild(textBox)    
 });
+
+
+const NEW_DURATION_FORMAT = (/\d+h(\s+\d+m)?/)
+//const new_duration_format = (/(\d+) godz\.(\s+(\d+) min\.)?/)
+
+function convertToOldFormat(duration) { 
+  duration = duration.replace('h', ' godz.')
+  return duration.replace('m', ' min.')
+}
+
 
 // save duration in sync storage
 waitForElm('.filmCoverSection__duration').then(elm => {
@@ -40,7 +46,14 @@ waitForElm('.filmCoverSection__duration').then(elm => {
   //console.log("duration", minutes)
   chrome.storage.sync.get(durationsName(), function(result) {
     var durations = result[durationsName()] || {}
-    //if (durations[filmId]) { return }
+
+    if (durationText.match(NEW_DURATION_FORMAT)) {
+      durationText = convertToOldFormat(durationText)
+      console.log("converted to: ", durationText)
+    } else {
+      console.log("old format ")
+    }
+
     durations[filmId] = durationText
     d = {}
     d[durationsName()] = durations
@@ -49,3 +62,4 @@ waitForElm('.filmCoverSection__duration').then(elm => {
   });
 });
 })
+
