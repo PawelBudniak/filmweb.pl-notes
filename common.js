@@ -71,6 +71,34 @@ function extractFilmID(id) {
   return parts[parts.length - 1];
 }
 
+function waitForElmOrTimeout(selector, timeoutMs) {
+    return new Promise((resolve) => {
+      const existing = document.querySelector(selector);
+      if (existing) {
+        return resolve(existing);
+      }
+  
+      const observer = new MutationObserver(() => {
+        const found = document.querySelector(selector);
+        if (found) {
+          clearTimeout(timeoutId);
+          observer.disconnect();
+          resolve(found);
+        }
+      });
+  
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+  
+      const timeoutId = setTimeout(() => {
+        observer.disconnect();
+        resolve(null); // or resolve(undefined) if you prefer
+      }, timeoutMs);
+    });
+  }
+
 function waitForElm(selector) {
     return new Promise(resolve => {
         if (document.querySelector(selector)) {

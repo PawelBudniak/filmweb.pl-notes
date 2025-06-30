@@ -5,9 +5,10 @@ RIBBON_ELEMENT =  '.' + RIBBON_NAME
 
 setTimeout(function() {
     // if (window.location.hash.includes("/wantToSee/")) {
-        console.log("WANT TO SEE")
+        console.log("WANT TO SEE 2025")
         // Wait until the first preview is available
-        waitForElm(RIBBON_ELEMENT).then(async (elm) => {
+        INITIAL_WAIT_TIMEOUT_MS = 2000
+        waitForElmOrTimeout(RIBBON_ELEMENT, INITIAL_WAIT_TIMEOUT_MS).then(async (elm) => {
 
             let notes = await readSyncStorage(notesName())
             let durations = await readSyncStorage(durationsName())
@@ -21,10 +22,49 @@ setTimeout(function() {
     
                 observer = observeDOM(notes, durations);
                 createSortButton(observer);
+
+                // backups
+                tryCreateSortButtonInBackground(observer)
+                tryEnrichMoviesInBackground(notes, durations)
             }, 1000);
         });
    // }
 }, 200);
+
+
+BACKGROUND_SORT_BUTTON_BERIOD_MS = 2000
+function tryCreateSortButtonInBackground(observer){
+  const intervalId = setInterval(() => {
+    if (!document.querySelector('.my-sort-button')) {
+      createSortButton(observer);
+    } else {
+      clearInterval(intervalId); // Stop checking once the button exists
+    }
+  }, BACKGROUND_SORT_BUTTON_BERIOD_MS);
+}
+
+
+BACKGROUND_ENRICH_PERIOD_MS = 2000
+function tryEnrichMoviesInBackground(notes, durations) {
+  setInterval(() => {
+    // Select all visible film preview containers
+    const filmPreviews = document.querySelectorAll(RIBBON_ELEMENT);
+
+    filmPreviews.forEach((ribbonElement) => {
+      const filmPreview = ribbonElement.parentElement.parentElement;
+      // Skip if note textbox is already present (identified by unique class)
+      if (filmPreview.querySelector('.my-note-textbox')) return;
+
+      const linkElement = filmPreview.querySelector(LINK_ELEMENT);
+
+      if (!linkElement) return;
+
+      const filmId = getFilmIdFromPath(linkElement.getAttribute('href'));
+
+      addNoteTextBoxWait(notes, filmPreview, durations);
+    });
+  }, BACKGROUND_ENRICH_PERIOD_MS);
+}
 
 const readSyncStorage = async (key) => {
     return new Promise((resolve, reject) => {
@@ -43,6 +83,7 @@ const LINK_ELEMENT = 'a[href^="/film/"], a[href^="/serial/"]'
 
 // WITH WAITING
 function addNoteTextBoxWait(notes, filmPreview, durations) {
+    if (filmPreview.querySelector('.my-note-textbox')) return;
     waitForElmParent(filmPreview, LINK_ELEMENT).then((linkElement) => {
        addNoteTextBoxLink(notes, filmPreview, linkElement, durations)
     });
@@ -50,7 +91,8 @@ function addNoteTextBoxWait(notes, filmPreview, durations) {
 
 // NO WAIT
 function addNoteTextBox(notes, filmPreview, durations) {
-    // console.log("link element for: ", filmPreview)
+    if (filmPreview.querySelector('.my-note-textbox')) return;
+  // console.log("link element for: ", filmPreview)
     var linkElement = filmPreview.querySelector(LINK_ELEMENT);
     addNoteTextBoxLink(notes, filmPreview, linkElement, durations)
 }
@@ -60,6 +102,8 @@ function addNoteTextBoxLink(notes, filmPreview, linkElement, durations){
 
     var textBox = defaultNoteTextbox()
     textBox.style.marginTop = '10px'
+    textBox.classList.add('my-note-textbox');
+
 
     // Retrieve the note for the current film ID, if available
     var noteText = notes[filmId] || '';
@@ -134,10 +178,12 @@ function observeDOM(notes, durations) {
 
   // SORT
 function createSortButton(observer) {
+  if (document.querySelector('.my-sort-button')) return;
   console.log("creating button")
   var sortButton = document.createElement('button');
   sortButton.textContent = 'Sort Movies';
   sortButton.style.margin = '10px';
+  sortButton.classList.add('my-sort-button')
 
   // Add an event listener to the button to trigger the sort logic
   sortButton.addEventListener('click', function () {
