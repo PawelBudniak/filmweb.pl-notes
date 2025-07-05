@@ -181,20 +181,30 @@ function createSortButton(observer) {
   if (document.querySelector('.my-sort-button')) return;
   console.log("creating button")
   var sortButton = document.createElement('button');
-  sortButton.textContent = 'Sort Movies';
+  sortButton.textContent = 'Posortuj filmy od najkrótszego';
   sortButton.style.margin = '10px';
   sortButton.classList.add('my-sort-button')
+  sortButton.style.position = 'fixed';
+
+  sortButton.style.top = '20px';
+  sortButton.style.left = '20px';
+  sortButton.style.zIndex = '9999';
+  sortButton.style.backgroundColor = 'blue';
+  sortButton.style.color = 'white';
+  sortButton.style.padding = '8px 12px';
+  sortButton.style.border = 'none';
+  sortButton.style.borderRadius = '4px';
 
   // Add an event listener to the button to trigger the sort logic
   sortButton.addEventListener('click', function () {
-    sortByDuration(observer);
+    sortByDuration(observer, sortButton);
   });
 
   // Append the button to the top of the page (you can adjust the target location)
   document.body.insertBefore(sortButton, document.body.firstChild);
 }
 
-async function sortByDuration(observer) {
+async function sortByDuration(observer, sortButton) {
   observer.disconnect();
     // Get the parent grid element
     
@@ -227,6 +237,10 @@ async function sortByDuration(observer) {
   moviesData.forEach(function (movie) {
     parentGrid.appendChild(movie.element);
   });
+
+  sortButton.textContent = 'Posortowano ✔️';
+  sortButton.disabled = true;  // opcjonalnie, żeby nie można było kliknąć ponownie
+  sortButton.style.backgroundColor = '#4CAF50'; // zielony kolor na potwierdzenie
 }
 
 async function scrollAllTheWayDown() {

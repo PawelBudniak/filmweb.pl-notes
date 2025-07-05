@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Filmweb notes",
+    "name": "Filmweb notatki",
     "version": "1.3",
-    "description": "Makes it possible to add a note to each film on filmweb.pl",
+    "description": "Pozwala dodać notatkę do każdego filmu dodanego \"do obejrzenia\" na filmweb.pl. Dzięki temu nie zapomnisz już dlaczego dodałeś film do listy.",
     "permissions": [
       "storage"
     ],

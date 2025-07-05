@@ -31,7 +31,7 @@ function defaultNoteTextbox(){
     // textBox.style.background = 'linear-gradient(to bottom, #ffffff, #f2f2f2)';
     // textBox.style.borderRadius = '10px';
     //textBox.style.transition = 'box-shadow 0.3s ease-in-out';
-    textBox.placeholder = 'Add your notes here...';
+    textBox.placeholder = 'Dodaj notatkę tutaj...';
 
     return textBox
 }
