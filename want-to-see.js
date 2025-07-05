@@ -194,9 +194,11 @@ function createSortButton(observer) {
   document.body.insertBefore(sortButton, document.body.firstChild);
 }
 
-function sortByDuration() {
+async function sortByDuration(observer) {
   observer.disconnect();
     // Get the parent grid element
+    
+  await scrollAllTheWayDownWithoutMovingView()
   var parentGrid = document.querySelector(RIBBON_ELEMENT).parentElement.parentElement.parentElement;
 
   // Get all the child movie elements
@@ -225,6 +227,62 @@ function sortByDuration() {
   moviesData.forEach(function (movie) {
     parentGrid.appendChild(movie.element);
   });
+}
+
+async function scrollAllTheWayDown() {
+  let prevHeight = 0;
+  let sameHeightCounter = 0;
+
+  while (sameHeightCounter < 5) {
+      window.scrollTo(0, document.body.scrollHeight);
+      await new Promise(resolve => setTimeout(resolve, 300)); // Wait for content to load
+
+      const currentHeight = document.body.scrollHeight;
+
+      if (currentHeight === prevHeight) {
+          sameHeightCounter++;
+      } else {
+          sameHeightCounter = 0;
+          prevHeight = currentHeight;
+      }
+  }
+}
+
+// async function scrollAllTheWayDownWithoutMovingView() {
+//   const originalScrollY = window.scrollY;
+//   await scrollAllTheWayDown();
+//   window.scrollTo(0, originalScrollY);
+// }
+async function scrollAllTheWayDownWithoutMovingView() {
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  let prevHeight = 0;
+  let unchangedScrolls = 0;
+
+  while (unchangedScrolls < 5) {
+      const originalScrollX = window.scrollX;
+      const originalScrollY = window.scrollY;
+
+      // Scroll to bottom
+      window.scrollTo(0, document.body.scrollHeight);
+
+      // Immediately restore scroll before browser paints
+      requestAnimationFrame(() => {
+          window.scrollTo(originalScrollX, originalScrollY);
+      });
+
+      // Small delay to let new content load
+      await delay(300);
+
+      const currentHeight = document.body.scrollHeight;
+
+      if (currentHeight === prevHeight) {
+          unchangedScrolls++;
+      } else {
+          prevHeight = currentHeight;
+          unchangedScrolls = 0;
+      }
+  }
 }
 
 function extractDuration(movieElement) {
