@@ -208,7 +208,8 @@ async function sortByDuration(observer, sortButton) {
   observer.disconnect();
     // Get the parent grid element
     
-  await scrollAllTheWayDownWithoutMovingView()
+  await scrollAllTheWayDown()
+
   var parentGrid = document.querySelector(RIBBON_ELEMENT).parentElement.parentElement.parentElement;
 
   // Get all the child movie elements
@@ -297,6 +298,12 @@ async function scrollAllTheWayDownWithoutMovingView() {
           unchangedScrolls = 0;
       }
   }
+  window.scrollTo(0, Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight
+  ));
+  await delay(5000)
+  window.scrollTo(0, 0);
 }
 
 function extractDuration(movieElement) {
