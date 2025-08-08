@@ -67,17 +67,22 @@ function tryEnrichMoviesInBackground(notes, durations) {
 }
 
 const readSyncStorage = async (key) => {
-    return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(key, function (result) {
-        if (result[key] === undefined) {
-          console.log('rejecting')
-          reject();
-        } else {
-          resolve(result[key]);
-        }
-      });
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(key, function (result) {
+      if (result[key] === undefined) {
+        console.log(`No data for key "${key}", creating new empty map`);
+        let obj = {};
+        obj[key] = {};
+        chrome.storage.sync.set(obj, () => {
+          resolve({});
+        });
+      } else {
+        resolve(result[key]);
+      }
     });
-  };
+  });
+};
+
 
 const LINK_ELEMENT = 'a[href^="/film/"], a[href^="/serial/"]'
 
