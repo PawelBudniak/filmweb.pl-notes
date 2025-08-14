@@ -7,25 +7,18 @@ setTimeout(function() {
     // if (window.location.hash.includes("/wantToSee/")) {
         console.log("WANT TO SEE 2025")
         // Wait until the first preview is available
-        INITIAL_WAIT_TIMEOUT_MS = 2000
+        INITIAL_WAIT_TIMEOUT_MS = 200000
         waitForElmOrTimeout(RIBBON_ELEMENT, INITIAL_WAIT_TIMEOUT_MS).then(async (elm) => {
 
             let notes = await readSyncStorage(notesName())
             let durations = await readSyncStorage(durationsName())
 
             setTimeout(function() {
-              var filmPreviews = document.querySelectorAll(RIBBON_ELEMENT);
-                filmPreviews.forEach(function(filmPreview) {
-                    filmPreview = filmPreview.parentElement.parentElement
-                    addNoteTextBox(notes, filmPreview, durations)
-                });
-    
-                observer = observeDOM(notes, durations);
-                createSortButton(observer);
+              tryCreateSortButtonInBackground()
+              tryEnrichMoviesInBackground(notes, durations)
 
-                // backups
-                tryCreateSortButtonInBackground(observer)
-                tryEnrichMoviesInBackground(notes, durations)
+              // backup that should be 
+              //observeDOMAndEnrichMovies(notes, durations);
             }, 1000);
         });
    // }
@@ -33,20 +26,27 @@ setTimeout(function() {
 
 
 BACKGROUND_SORT_BUTTON_BERIOD_MS = 2000
-function tryCreateSortButtonInBackground(observer){
+function tryCreateSortButtonInBackground(){
   const intervalId = setInterval(() => {
     if (!document.querySelector('.my-sort-button')) {
-      createSortButton(observer);
+      createSortButton();
     } else {
       clearInterval(intervalId); // Stop checking once the button exists
     }
   }, BACKGROUND_SORT_BUTTON_BERIOD_MS);
+  createSortButton(); // run instantly
 }
 
 
-BACKGROUND_ENRICH_PERIOD_MS = 2000
+BACKGROUND_ENRICH_PERIOD_MS = 500
 function tryEnrichMoviesInBackground(notes, durations) {
   setInterval(() => {
+      enrichMovies(notes, durations)
+    }, BACKGROUND_ENRICH_PERIOD_MS);
+  enrichMovies(notes, durations); // run instantly
+}
+
+function enrichMovies(notes, durations) {
     // Select all visible film preview containers
     const filmPreviews = document.querySelectorAll(RIBBON_ELEMENT);
 
@@ -62,8 +62,7 @@ function tryEnrichMoviesInBackground(notes, durations) {
       const filmId = getFilmIdFromPath(linkElement.getAttribute('href'));
 
       addNoteTextBoxWait(notes, filmPreview, durations);
-    });
-  }, BACKGROUND_ENRICH_PERIOD_MS);
+    })
 }
 
 const readSyncStorage = async (key) => {
@@ -151,7 +150,7 @@ function createDurationElement(duration) {
   }
 
 // Function to observe mutations in the DOM
-function observeDOM(notes, durations) {
+function observeDOMAndEnrichMovies(notes, durations) {
   // Select the target node to observe (the body in this case)
   var grid = document.querySelector(RIBBON_ELEMENT).parentElement.parentElement.parentElement;
 
@@ -182,7 +181,7 @@ function observeDOM(notes, durations) {
 }
 
   // SORT
-function createSortButton(observer) {
+function createSortButton() {
   if (document.querySelector('.my-sort-button')) return;
   console.log("creating button")
   var sortButton = document.createElement('button');
@@ -202,17 +201,14 @@ function createSortButton(observer) {
 
   // Add an event listener to the button to trigger the sort logic
   sortButton.addEventListener('click', function () {
-    sortByDuration(observer, sortButton);
+    sortByDuration(sortButton);
   });
 
   // Append the button to the top of the page (you can adjust the target location)
   document.body.insertBefore(sortButton, document.body.firstChild);
 }
 
-async function sortByDuration(observer, sortButton) {
-  observer.disconnect();
-    // Get the parent grid element
-    
+async function sortByDuration(sortButton) {    
   await scrollAllTheWayDown()
 
   var parentGrid = document.querySelector(RIBBON_ELEMENT).parentElement.parentElement.parentElement;

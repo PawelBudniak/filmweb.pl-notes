@@ -26,7 +26,7 @@ function print (name) {
 // add text box
 waitForElm('.filmRatingSection__filmActionBox').then((elm) => {
   console.log("namierzony filmRatingSection__filmActionBox");
-  // wait for child elements to get added so it actually goes to the bottom
+  // wait for child elements to get added so it actually goes to the bottom 
   setTimeout(_ => {
     elm.appendChild(textBox);
   }, 500);
